@@ -1,0 +1,17 @@
+{
+  "name": "feed-worker",
+  "author": "Hussein Ait Lahcen",
+  "license": "GPL-3",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "pulp browserify -j 4 -O -I src --to ../frontend/public/service-worker.js",
+    "install": "bower install && ln -s ../../extra/purescript-workers bower_components/purescript-workers"
+  },
+  "dependencies": {
+    "gulp": "^3.9.1"
+  },
+  "devDependencies": {
+    "bower": "1.8.4",
+    "pulp": "12.0.1"
+  }
+}

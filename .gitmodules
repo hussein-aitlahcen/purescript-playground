@@ -1,0 +1,3 @@
+[submodule "extra/purescript-workers"]
+	path = extra/purescript-workers
+	url = https://github.com/truqu/purescript-workers
