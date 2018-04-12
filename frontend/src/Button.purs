@@ -17,14 +17,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-module Toggle
-       (
-         toggle,
-         State,
-         Query,
-         Message
-       )
-       where
+module Button where
 
 import Data.Maybe (Maybe(..))
 import Halogen as H
@@ -41,8 +34,8 @@ data Query a
 
 data Message = Toggled Boolean
 
-toggle :: forall m. H.Component HH.HTML Query Unit Message m
-toggle =
+button :: forall m. H.Component HH.HTML Query Unit Message m
+button =
   H.component
     { initialState
     , render

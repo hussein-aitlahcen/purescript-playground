@@ -24,12 +24,12 @@ import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Prelude
-import Toggle as T
+import Button as Button
 
 type State = { loading :: Boolean }
 
 data Query a
-  = HandleToggle T.Message a
+  = HandleToggle Button.Message a
   | IsLoaded (Boolean -> a)
 
 data Message = Loaded
@@ -55,21 +55,21 @@ mainFrame =
     receiver :: Unit -> Maybe (Query Unit)
     receiver = const Nothing
 
-    render :: State -> H.ParentHTML Query T.Query Slot m
+    render :: State -> H.ParentHTML Query Button.Query Slot m
     render state =
       HH.div_
         [ HH.p_
             [ HH.text (stateText state.loading)
             ]
-        , HH.slot ToggleSlot T.toggle unit (HE.input HandleToggle)
+        , HH.slot ToggleSlot Button.button unit (HE.input HandleToggle)
         ]
       where
         stateText false = "Button is off"
         stateText true = "Button is now on !"
 
-    eval :: Query ~> H.ParentDSL State Query T.Query Slot Void m
+    eval :: Query ~> H.ParentDSL State Query Button.Query Slot Void m
     eval = case _ of
       IsLoaded reply -> reply <$> H.gets _.loading
-      HandleToggle _ next -> do
-        H.put { loading: true }
+      HandleToggle (Button.Toggled value) next -> do
+        H.put { loading: value }
         pure next
