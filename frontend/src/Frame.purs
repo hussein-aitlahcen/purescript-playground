@@ -56,7 +56,7 @@ mainFrame =
     }
   where
     initialState :: Unit -> State
-    initialState i = { loading: false }
+    initialState = const { loading: false }
 
     receiver :: Unit -> Maybe (Query Unit)
     receiver = const Nothing
