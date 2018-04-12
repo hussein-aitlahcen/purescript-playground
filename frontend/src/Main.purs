@@ -19,12 +19,11 @@
 
 module Main where
 
-import Prelude
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Frame as F
+import Halogen.Aff as HA
+import Halogen.VDom.Driver (runUI)
+import Prelude
 
-main
-  :: forall e
-  .  Eff (console :: CONSOLE | e) Unit
-main =
-  log "Hello, World !"
+main :: Eff (HA.HalogenEffects ()) Unit
+main = HA.runHalogenAff (runUI F.mainFrame unit =<< HA.awaitBody)
