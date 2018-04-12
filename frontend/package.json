@@ -9,10 +9,6 @@
         "build": "pulp browserify --to public/app.js",
         "install": "bower install"
     },
-    "dependencies": {
-        "react": "^15.0.0",
-        "react-dom": "^15.0.0"
-    },
     "devDependencies": {
         "bower": "1.8.4",
         "pulp": "12.0.1"
