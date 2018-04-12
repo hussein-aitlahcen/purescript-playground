@@ -70,8 +70,8 @@ mainFrame =
         , HH.slot ToggleSlot T.toggle unit (HE.input HandleToggle)
         ]
       where
-        stateText false = "Loading..."
-        stateText true = "Loading complete ! :D"
+        stateText false = "Button is off"
+        stateText true = "Button is now on !"
 
     eval :: Query ~> H.ParentDSL State Query T.Query Slot Void m
     eval = case _ of
