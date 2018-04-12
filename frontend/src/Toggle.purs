@@ -71,8 +71,8 @@ toggle =
 
     eval :: Query ~> H.ComponentDSL State Query Message m
     eval = case _ of
-      Toggle next -> not <$> H.get >>= \nextState ->
-        do
+      Toggle next -> do
+          nextState <- H.gets not
           H.put nextState
           H.raise (Toggled nextState)
           pure next
