@@ -31,7 +31,7 @@ import Prelude
 
 type FrameEffect eff = Aff (ajax :: AX.AJAX | eff)
 
-type State = { loading :: Boolean
+type State = { loading  :: Boolean
              , username :: String
              }
 
@@ -71,7 +71,7 @@ mainFrame =
         [ HH.fieldset
             [ HP.disabled state.loading ]
             [ HH.label
-              [ HP.for "github-username" ]
+              [ HP.for  "github-username" ]
               [ HH.text "Github Username" ]
             , HH.input
                 [ HP.type_ HP.InputText
@@ -84,13 +84,10 @@ mainFrame =
             ]
         ]
 
-
     eval :: Query ~> H.ParentDSL State Query Button.Query Slot Void (FrameEffect eff)
-    eval (IsLoading reply) = reply <$> H.gets _.loading
-    eval (UpdateUsername user next) = H.modify (_ { username = user }) *> pure next
-    eval (HandleButton Button.Clicked next) = do
-      H.modify (_ { loading = true })
-      pure next
+    eval (IsLoading reply)                  = reply <$> H.gets _.loading
+    eval (UpdateUsername user next)         = H.modify (_ { username = user }) *> pure next
+    eval (HandleButton Button.Clicked next) = H.modify (_ { loading  = true }) *> pure next
       where
         getRepositoriesUrl :: String -> String
         getRepositoriesUrl user = "https://api.github.com/users/" <> user <> "/repos"
