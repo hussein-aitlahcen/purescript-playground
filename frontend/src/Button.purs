@@ -26,13 +26,12 @@ import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Prelude
 
-type State = Boolean
+type State = Unit
 
 data Query a
-  = Toggle a
-  | IsOn (Boolean -> a)
+  = Click a
 
-data Message = Toggled Boolean
+data Message = Clicked
 
 button :: forall m. H.Component HH.HTML Query Unit Message m
 button =
@@ -44,29 +43,21 @@ button =
     }
   where
     initialState :: Unit -> State
-    initialState = const false
+    initialState = const unit
 
     receiver :: Unit -> Maybe (Query Unit)
     receiver = const Nothing
 
     render :: State -> H.ComponentHTML Query
-    render state =
+    render _ =
       let
-        labelOf true  = "On"
-        labelOf false = "Off"
-        label = labelOf state
+        label = "Load user repositories."
       in
         HH.button
           [ HP.title label
-          , HE.onClick (HE.input_ Toggle)
+          , HE.onClick (HE.input_ Click)
           ]
           [ HH.text label ]
 
     eval :: Query ~> H.ComponentDSL State Query Message m
-    eval = case _ of
-      Toggle next -> do
-          nextState <- H.gets not
-          H.put nextState
-          H.raise (Toggled nextState)
-          pure next
-      IsOn reply -> reply <$> H.get
+    eval (Click next) = H.raise Clicked *> pure next

@@ -19,28 +19,36 @@
 
 module Frame where
 
+import Button as Button
+import Control.Monad.Aff (Aff)
 import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
+import Halogen.HTML.Properties as HP
+import Network.HTTP.Affjax as AX
 import Prelude
-import Button as Button
 
-type State = { loading :: Boolean }
+type FrameEffect eff = Aff (ajax :: AX.AJAX | eff)
+
+type State = { loading :: Boolean
+             , username :: String
+             }
 
 data Query a
-  = HandleToggle Button.Message a
-  | IsLoaded (Boolean -> a)
+  = HandleButton Button.Message a
+  | IsLoading (Boolean -> a)
+  | UpdateUsername String a
 
-data Message = Loaded
+data Message = LoadComplete
 
-data Slot = ToggleSlot
+data Slot = ButtonSlot
 
 -- Required
 derive instance eqSlot :: Eq Slot
 derive instance ordSlot :: Ord Slot
 
-mainFrame :: forall m. H.Component HH.HTML Query Unit Void m
+mainFrame :: forall eff. H.Component HH.HTML Query Unit Void (FrameEffect eff)
 mainFrame =
   H.parentComponent
     { initialState
@@ -50,26 +58,39 @@ mainFrame =
     }
   where
     initialState :: Unit -> State
-    initialState = const { loading: false }
+    initialState = const { loading: false
+                         , username: ""
+                         }
 
     receiver :: Unit -> Maybe (Query Unit)
     receiver = const Nothing
 
-    render :: State -> H.ParentHTML Query Button.Query Slot m
+    render :: State -> H.ParentHTML Query Button.Query Slot (FrameEffect eff)
+    render ({ loading: true }) =
+      HH.div_
+        [ HH.text "Loading repositories..."
+        ]
     render state =
       HH.div_
-        [ HH.p_
-            [ HH.text (stateText state.loading)
+        [ HH.label
+            [ HP.for "github-username" ]
+            [ HH.text "Github Username" ]
+        , HH.input
+            [ HP.type_ HP.InputText
+            , HP.id_ "github-username"
+            , HP.autofocus true
+            , HP.value state.username
+            , HE.onValueInput (HE.input UpdateUsername)
             ]
-        , HH.slot ToggleSlot Button.button unit (HE.input HandleToggle)
+        , HH.slot ButtonSlot Button.button unit (HE.input HandleButton)
         ]
-      where
-        stateText false = "Button is off"
-        stateText true = "Button is now on !"
 
-    eval :: Query ~> H.ParentDSL State Query Button.Query Slot Void m
-    eval = case _ of
-      IsLoaded reply -> reply <$> H.gets _.loading
-      HandleToggle (Button.Toggled value) next -> do
-        H.put { loading: value }
-        pure next
+
+    eval :: Query ~> H.ParentDSL State Query Button.Query Slot Void (FrameEffect eff)
+    eval (IsLoading reply) = reply <$> H.gets _.loading
+    eval (UpdateUsername user next) = H.modify (_ { username = user }) *> pure next
+    eval (HandleButton Button.Clicked next) = do
+      pure next
+      where
+        getRepositoriesUrl :: String -> String
+        getRepositoriesUrl user = "https://api.github.com/users/" <> user <> "/repos"
