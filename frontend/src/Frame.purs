@@ -66,23 +66,22 @@ mainFrame =
     receiver = const Nothing
 
     render :: State -> H.ParentHTML Query Button.Query Slot (FrameEffect eff)
-    render ({ loading: true }) =
-      HH.div_
-        [ HH.text "Loading repositories..."
-        ]
     render state =
       HH.div_
-        [ HH.label
-            [ HP.for "github-username" ]
-            [ HH.text "Github Username" ]
-        , HH.input
-            [ HP.type_ HP.InputText
-            , HP.id_ "github-username"
-            , HP.autofocus true
-            , HP.value state.username
-            , HE.onValueInput (HE.input UpdateUsername)
+        [ HH.fieldset
+            [ HP.disabled state.loading ]
+            [ HH.label
+              [ HP.for "github-username" ]
+              [ HH.text "Github Username" ]
+            , HH.input
+                [ HP.type_ HP.InputText
+                , HP.id_ "github-username"
+                , HP.autofocus true
+                , HP.value state.username
+                , HE.onValueInput (HE.input UpdateUsername)
+                ]
+            , HH.slot ButtonSlot Button.button unit (HE.input HandleButton)
             ]
-        , HH.slot ButtonSlot Button.button unit (HE.input HandleButton)
         ]
 
 
@@ -90,6 +89,7 @@ mainFrame =
     eval (IsLoading reply) = reply <$> H.gets _.loading
     eval (UpdateUsername user next) = H.modify (_ { username = user }) *> pure next
     eval (HandleButton Button.Clicked next) = do
+      H.modify (_ { loading = true })
       pure next
       where
         getRepositoriesUrl :: String -> String
