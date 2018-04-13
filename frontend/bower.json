@@ -1,8 +1,9 @@
 {
-  "name": "feed",
-  "version": "1.0.0",
-  "license": "GPL-3",
-  "dependencies": {
-    "purescript-halogen": "*"
-  }
+    "name": "feed",
+    "version": "1.0.0",
+    "license": "GPL-3",
+    "dependencies": {
+        "purescript-halogen": "*",
+        "purescript-affjax": "*"
+    }
 }
